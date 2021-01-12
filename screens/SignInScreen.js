@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -19,19 +20,22 @@ export default function SignInScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorText, setErrorText] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function login() {
     console.log(" -- Login Time -- ");
     Keyboard.dismiss();
 
     try {
+      setLoading(true);
       const response = await axios.post(API + API_LOGIN, {
         username,
         password,
       });
       console.log("Success logging in!");
-      console.log(response);
-      AsyncStorage.setItem("token", response.data.access_token);
+      console.log(username);
+      await AsyncStorage.setItem("token", response.data.access_token);
+      setLoading(false);
       navigation.navigate("Account");
     } catch (error) {
       console.log("Error logging in!");
@@ -62,10 +66,16 @@ export default function SignInScreen({ navigation }) {
           value={password}
           onChangeText={(input) => setPassword(input)}
         />
-        <TouchableOpacity onPress={login} style={styles.loginButton}>
-          <Text style={styles.buttonText}>Log in</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity onPress={login} style={styles.loginButton}>
+            <Text style={styles.buttonText}>Log in</Text>
+          </TouchableOpacity>
+          {loading ? (
+            <ActivityIndicator style={{ marginLeft: 20, marginBottom: 20 }} /> // adjust
+          ) : null}
+        </View>
         <Text style={styles.errorText}>{errorText}</Text>
+        <View style={{ height: 20, alignItems: "left" }}></View>
       </View>
     </TouchableWithoutFeedback>
   );
