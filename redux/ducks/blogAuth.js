@@ -9,11 +9,12 @@ export function signOutAction() {
   return { type: SIGN_OUT };
 }
 
-const intialState = {
+const initialState = {
   signedIn: false,
 };
 
 export default function blogAuthReducer(state = initialState, action) {
+  console.log(`Action is ${JSON.stringify(action)}`);
   switch (action.type) {
     case SIGN_IN:
       return { ...state, signedIn: true };
